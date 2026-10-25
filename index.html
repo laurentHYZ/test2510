@@ -66,6 +66,20 @@
   canvas{display:block;margin:0 auto}
   .preview{width:84px;height:56px}
   #nextWrap{display:flex;flex-direction:column;gap:6px}
+  .mute{
+    width:100%;
+    background:var(--panel-2);
+    color:var(--text);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:6px 4px;
+    font:inherit;
+    font-size:12px;
+    letter-spacing:.12em;
+    cursor:pointer;
+  }
+  .mute:hover{border-color:var(--accent)}
+  .mute.off{color:var(--muted);text-decoration:line-through;opacity:.7}
 
   .stage{
     position:relative;
@@ -158,6 +172,7 @@
         <canvas id="next2" class="preview"></canvas>
       </div>
     </div>
+    <button class="mute" id="mute" type="button" aria-pressed="false">SOUND ON</button>
   </aside>
 
   <div class="stage">
@@ -303,6 +318,149 @@
     return setupCanvas(document.getElementById("next" + i), PW, PH);
   });
 
+  // ---------------------------------------------------------------- audio
+  // Everything is synthesized with the WebAudio API: no files to download,
+  // still works fully offline.
+  const Sound = (function () {
+    let actx = null, master = null, muted = false;
+    try { muted = localStorage.getItem("tetris-muted") === "1"; } catch (e) { muted = false; }
+
+    function ensure() {
+      if (actx) {
+        if (actx.state === "suspended") { actx.resume(); }
+        return actx;
+      }
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      actx = new AC();
+      master = actx.createGain();
+      master.gain.value = 0.3;
+      master.connect(actx.destination);
+      return actx;
+    }
+
+    // A single blip; `to` glides the pitch, `delay` spreads notes into chords
+    // and arpeggios.
+    function tone(o) {
+      if (muted) return;
+      const ac = ensure();
+      if (!ac) return;
+      const t0 = ac.currentTime + (o.delay || 0);
+      const dur = o.dur || 0.08;
+      const osc = ac.createOscillator();
+      const g = ac.createGain();
+      osc.type = o.type || "square";
+      osc.frequency.setValueAtTime(o.freq, t0);
+      if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t0 + dur);
+      const vol = o.vol === undefined ? 0.5 : o.vol;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(vol, t0 + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(g);
+      g.connect(master);
+      osc.start(t0);
+      osc.stop(t0 + dur + 0.02);
+    }
+
+    // Filtered noise burst, used for the hard-drop impact.
+    function thud(vol, cutoff, len) {
+      if (muted) return;
+      const ac = ensure();
+      if (!ac) return;
+      const t0 = ac.currentTime;
+      const n = Math.floor(ac.sampleRate * (len || 0.16));
+      const buf = ac.createBuffer(1, n, ac.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < n; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3);
+      }
+      const src = ac.createBufferSource();
+      src.buffer = buf;
+      const lp = ac.createBiquadFilter();
+      lp.type = "lowpass";
+      lp.frequency.value = cutoff || 800;
+      const g = ac.createGain();
+      g.gain.value = vol;
+      src.connect(lp);
+      lp.connect(g);
+      g.connect(master);
+      src.start(t0);
+    }
+
+    let lastMove = 0;
+
+    return {
+      unlock: ensure,
+      muted: function () { return muted; },
+      toggle: function () {
+        muted = !muted;
+        try { localStorage.setItem("tetris-muted", muted ? "1" : "0"); } catch (e) {}
+        if (!muted) { ensure(); tone({ freq: 660, to: 880, dur: 0.12, vol: 0.4, type: "triangle" }); }
+        return muted;
+      },
+      move: function () {
+        const now = performance.now();
+        if (now - lastMove < 45) return;
+        lastMove = now;
+        tone({ freq: 240, to: 200, dur: 0.045, vol: 0.16, type: "square" });
+      },
+      rotate: function () {
+        tone({ freq: 420, to: 560, dur: 0.06, vol: 0.22, type: "triangle" });
+      },
+      hold: function () {
+        tone({ freq: 500, to: 720, dur: 0.09, vol: 0.24, type: "triangle" });
+      },
+      lock: function () {
+        thud(0.35, 600, 0.1);
+        tone({ freq: 180, to: 120, dur: 0.06, vol: 0.18, type: "square" });
+      },
+      hardDrop: function () {
+        thud(0.55, 900, 0.14);
+        tone({ freq: 150, to: 60, dur: 0.12, vol: 0.28, type: "sawtooth" });
+      },
+      clear: function (n) {
+        const notes = n === 4
+          ? [523, 659, 784, 1047, 1319]
+          : [440, 554, 659, 880].slice(0, n + 1);
+        for (let i = 0; i < notes.length; i++) {
+          tone({ freq: notes[i], dur: 0.11, vol: 0.34, type: "triangle", delay: i * 0.055 });
+        }
+        if (n >= 3) tone({ freq: 160, to: 90, dur: 0.22, vol: 0.22, type: "sine" });
+      },
+      levelUp: function () {
+        [523, 659, 784, 1047].forEach(function (f, i) {
+          tone({ freq: f, dur: 0.1, vol: 0.3, type: "square", delay: i * 0.07 });
+        });
+      },
+      start: function () {
+        [392, 523, 659].forEach(function (f, i) {
+          tone({ freq: f, dur: 0.1, vol: 0.3, type: "triangle", delay: i * 0.08 });
+        });
+      },
+      gameOver: function () {
+        [523, 415, 330, 220].forEach(function (f, i) {
+          tone({ freq: f, dur: 0.24, vol: 0.32, type: "sawtooth", delay: i * 0.17 });
+        });
+      }
+    };
+  })();
+
+  const muteBtn = document.getElementById("mute");
+
+  function syncMuteButton() {
+    const off = Sound.muted();
+    muteBtn.textContent = off ? "SOUND OFF" : "SOUND ON";
+    muteBtn.setAttribute("aria-pressed", off ? "true" : "false");
+    muteBtn.classList.toggle("off", off);
+  }
+
+  muteBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    Sound.toggle();
+    syncMuteButton();
+  });
+  syncMuteButton();
+
   // ---------------------------------------------------------------- drawing
   function drawBlock(c, x, y, size, color, alpha) {
     const pad = Math.max(1, size * 0.06);
@@ -435,6 +593,7 @@
     piece.x += dx;
     piece.y += dy;
     resetLock();
+    if (dx !== 0) Sound.move();
     return true;
   }
 
@@ -453,6 +612,7 @@
         piece.x += dx;
         piece.y += dy;
         resetLock();
+        Sound.rotate();
         return true;
       }
     }
@@ -473,7 +633,8 @@
       dropped++;
     }
     score += dropped * 2;
-    lockPiece();
+    Sound.hardDrop();
+    lockPiece(true);
   }
 
   function doHold() {
@@ -491,6 +652,7 @@
     }
     drawHoldAndNext();
     updateStats();
+    Sound.hold();
   }
 
   function clearLines() {
@@ -510,7 +672,8 @@
     return cleared;
   }
 
-  function lockPiece() {
+  function lockPiece(fromHardDrop) {
+    if (!fromHardDrop) Sound.lock();
     let visible = false;
     for (let y = 0; y < piece.matrix.length; y++) {
       for (let x = 0; x < piece.matrix[y].length; x++) {
@@ -535,8 +698,11 @@
       if (combo > 0) gain += 50 * combo * level;
       score += gain;
       lines += n;
+      const prevLevel = level;
       level = Math.min(SPEEDS.length, Math.floor(lines / 10) + 1);
       dropInterval = SPEEDS[level - 1];
+      Sound.clear(n);
+      if (level > prevLevel) Sound.levelUp();
       updateStats();
     } else {
       combo = -1;
@@ -582,6 +748,7 @@
     drawHoldAndNext();
     updateStats();
     lastTime = performance.now();
+    Sound.start();
   }
 
   function gameOver() {
@@ -592,6 +759,7 @@
       "<br>Press Enter or tap to play again";
     overlay.classList.remove("hidden");
     updateStats();
+    Sound.gameOver();
   }
 
   function togglePause() {
@@ -718,9 +886,16 @@
   function pressLeft() { dasDir = -1; dasTimer = 0; arrTimer = 0; move(-1, 0); }
   function pressRight() { dasDir = 1; dasTimer = 0; arrTimer = 0; move(1, 0); }
 
+  // Browsers only allow audio after a user gesture: prime the context on the
+  // first key press / tap.
+  document.addEventListener("keydown", function () { Sound.unlock(); }, { once: true });
+  document.addEventListener("pointerdown", function () { Sound.unlock(); }, { once: true });
+
   document.addEventListener("keydown", function (e) {
     const k = e.key;
     if (["ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp", " "].indexOf(k) !== -1) e.preventDefault();
+
+    if (k === "m" || k === "M") { Sound.toggle(); syncMuteButton(); return; }
 
     if (state === "ready" || state === "over") {
       if (k === "Enter" || k === "r" || k === "R") { startGame(); }

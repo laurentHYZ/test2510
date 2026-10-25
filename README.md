@@ -30,6 +30,7 @@ xdg-open index.html    # or: open index.html (macOS), start index.html (Windows)
 | <kbd>C</kbd> / <kbd>Shift</kbd> | Hold piece |
 | <kbd>P</kbd> / <kbd>Esc</kbd> | Pause |
 | <kbd>R</kbd> | Restart |
+| <kbd>M</kbd> | Mute / unmute sound |
 
 On touch devices, on-screen buttons appear below the board.
 
@@ -41,5 +42,6 @@ On touch devices, on-screen buttons appear below the board.
 - Lock delay (500 ms, up to 15 resets)
 - Guideline scoring: 100 / 300 / 500 / 800 × level, back-to-back Tetris bonus, combos
 - Level up every 10 lines, 15-step gravity curve
+- Chiptune sound effects synthesized in-browser with the Web Audio API (move, rotate, hold, lock, hard drop, line clear, level up, game over) — no audio files, toggle with the **SOUND** button or <kbd>M</kbd>
 - Best score saved in `localStorage`
 - Responsive dark UI, no external assets
