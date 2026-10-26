@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>test2510 / Tetris — Product One-Pager</title>
+<style>
+  @page { size: A4; margin: 11mm 12mm 9mm 12mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "DejaVu Sans", "Liberation Sans", Arial, sans-serif;
+    font-size: 8.3pt; line-height: 1.29; color: #14181f;
+  }
+  .cjk { font-family: "Droid Sans Fallback", "DejaVu Sans", sans-serif; }
+  a { color: #1d4ed8; text-decoration: none; }
+
+  header { border-bottom: 2.2pt solid #14181f; padding-bottom: 4px; margin-bottom: 6px; }
+  .kicker { font-size: 6.8pt; letter-spacing: 1.5pt; text-transform: uppercase; color: #5b6472; }
+  h1 { font-size: 16.5pt; margin: 2px 0 3px; letter-spacing: -0.3pt; }
+  .tagline { font-size: 8.6pt; color: #333a45; }
+  .urlline { margin-top: 4px; font-size: 8.2pt; }
+
+  h2 {
+    font-size: 7.2pt; letter-spacing: 1.1pt; text-transform: uppercase;
+    color: #14181f; margin: 6px 0 2px; padding-bottom: 1.5px;
+    border-bottom: 0.6pt solid #c3c9d4;
+  }
+  p { margin: 0 0 3px; }
+
+  table { width: 100%; border-collapse: collapse; }
+  td, th { text-align: left; vertical-align: top; padding: 1.35px 4px; }
+  .snap td { border-bottom: 0.5pt solid #e3e7ee; }
+  .snap td.k { width: 27%; color: #5b6472; }
+  .snap td.v { font-weight: 600; }
+  .snap td.k2 { width: 21%; color: #5b6472; }
+  .snap td.v2 { font-weight: 600; }
+
+  .two { display: table; width: 100%; }
+  .col { display: table-cell; vertical-align: top; width: 50%; }
+  .col.l { padding-right: 9px; }
+  .col.r { padding-left: 9px; }
+
+  ul { margin: 2px 0 4px; padding-left: 12px; }
+  li { margin-bottom: 1.1px; }
+
+  .flags { background: #fdf6e6; border: 0.6pt solid #e8c86a; padding: 4px 7px; margin-top: 2px; }
+  .flags h2 { border: none; margin: 0 0 3px; color: #7a4c00; }
+  .warn { background: #fdeeee; border: 0.6pt solid #e09a9a; padding: 4px 7px; margin-top: 4px; }
+  .warn h2 { border: none; margin: 0 0 3px; color: #8a1c1c; }
+
+  .traction { display: table; width: 100%; border-collapse: separate; border-spacing: 5px 0; margin: 2px 0 3px; }
+  .stat { display: table-cell; width: 25%; background: #f4f6f9; border: 0.6pt solid #d5dbe4; padding: 4px 3px; text-align: center; }
+  .stat .n { font-size: 13pt; font-weight: 700; display: block; line-height: 1.1; }
+  .stat .l { font-size: 6.5pt; text-transform: uppercase; letter-spacing: 0.5pt; color: #5b6472; }
+  .zero .n { color: #9aa2ae; }
+
+  footer { margin-top: 7px; padding-top: 4px; border-top: 0.6pt solid #c3c9d4; font-size: 6.8pt; color: #5b6472; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">Product One-Pager &middot; Prepared 26 October 2026</div>
+  <h1>Tetris <span class="cjk">俄罗斯方块</span> &mdash; single-file browser game</h1>
+  <div class="tagline">A complete, dependency-free Tetris implementation in one 34&nbsp;KB HTML file. No build step, no server, no external assets, no network calls &mdash; runs offline in any modern browser.</div>
+  <div class="urlline"><strong>Live demo:</strong> <a href="https://laurenthyz.github.io/test2510/">https://laurenthyz.github.io/test2510/</a> &nbsp;&middot;&nbsp; <strong>Source:</strong> <a href="https://github.com/laurentHYZ/test2510">github.com/laurentHYZ/test2510</a></div>
+</header>
+
+<h2>At a glance</h2>
+<table class="snap">
+  <tr><td class="k">Repository</td><td class="v">laurentHYZ/test2510 (public)</td><td class="k2">Owner / maintainer</td><td class="v2">laurentHYZ &mdash; sole collaborator (admin), sole contributor</td></tr>
+  <tr><td class="k">Created</td><td class="v">25 Oct 2026, 09:31 UTC</td><td class="k2">Last commit</td><td class="v2">26 Oct 2026, 10:49 UTC (e0d8bab)</td></tr>
+  <tr><td class="k">Commits / contributors</td><td class="v">5 commits, 1 contributor</td><td class="k2">Branch / releases</td><td class="v2">main &middot; 0 releases, 0 tags</td></tr>
+  <tr><td class="k">Repo contents</td><td class="v">index.html (34,069 B), README.md, screenshot.png</td><td class="k2">Primary language</td><td class="v2">HTML (100% of code)</td></tr>
+  <tr><td class="k">Live hosting</td><td class="v">GitHub Pages, build status &ldquo;built&rdquo;, HTTPS enforced</td><td class="k2">Custom domain</td><td class="v2">none (github.io path only)</td></tr>
+  <tr><td class="k">License</td><td class="v">None &mdash; no LICENSE file; all rights reserved by default</td><td class="k2">Stars / forks / watchers</td><td class="v2">0 / 0 / 0</td></tr>
+</table>
+
+<h2>What the product is</h2>
+<p>A single-page Tetris game delivered as one self-contained HTML document. I inspected the live page directly: it loads one inline script (~27&nbsp;KB) and one inline stylesheet, references no external scripts or fonts, and makes no network requests other than its own favicon. It is a fully offline-capable web app whose entire distribution is one file that can be opened from disk, e-mailed, or served from any static host.</p>
+
+<h2>Traction measured to date</h2>
+<div class="traction">
+  <div class="stat zero"><span class="n">8</span><span class="l">Page views</span></div>
+  <div class="stat zero"><span class="n">1</span><span class="l">Unique visitors</span></div>
+  <div class="stat zero"><span class="n">0</span><span class="l">Stars / forks</span></div>
+  <div class="stat"><span class="n">25</span><span class="l">Repo clones*</span></div>
+</div>
+<p style="font-size:7.4pt;color:#5b6472;">Last-14-day totals from the GitHub traffic API. *12 unique cloners, which most likely reflects automation and mirroring rather than users; the demo has had one human visitor.</p>
+
+<div class="two">
+  <div class="col l">
+    <h2>Feature set</h2>
+    <ul>
+      <li>10&times;20 playfield, 7-bag randomiser</li>
+      <li>Super Rotation System with full wall-kick tables</li>
+      <li>Ghost piece, hold slot, 3-piece next preview</li>
+      <li>Lock delay (500&nbsp;ms, up to 15 resets)</li>
+      <li>Guideline scoring: 100/300/500/800&nbsp;&times;&nbsp;level, back-to-back and combo bonuses</li>
+      <li>Level up every 10 lines, 15-step gravity curve</li>
+      <li>Chiptune sound effects synthesised in-browser with the Web Audio API &mdash; no audio files</li>
+      <li>Best score persisted in localStorage</li>
+      <li>Bilingual UI (Simplified Chinese / English), Chinese default, choice remembered</li>
+      <li>Responsive dark UI with on-screen touch controls</li>
+    </ul>
+  </div>
+  <div class="col r">
+    <h2>Technical highlights</h2>
+    <ul>
+      <li><strong>One file, no build step.</strong> No bundler, no package manifest, no dependencies to patch or audit.</li>
+      <li><strong>No supply chain.</strong> Zero third-party code, zero external requests &mdash; nothing to compromise downstream.</li>
+      <li><strong>Trivial distribution.</strong> Any static host, any CDN, or a local file; works offline and on locked-down networks.</li>
+      <li><strong>Small.</strong> 34&nbsp;KB of HTML including markup, styles and engine &mdash; sub-second load on any connection.</li>
+      <li><strong>Standards-only stack.</strong> Canvas rendering, Web Audio, localStorage: no framework lock-in.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="flags">
+  <h2>Gaps this one-pager cannot fill &mdash; founder input required</h2>
+  <p>The data behind this document is the public repository and the live page. Neither contains a business case. Before this is shown to investors, the following must be supplied by the founder and must be true: the problem being solved and for whom; the business model and pricing; team and background; market sizing with sources; a competitive comparison against the many existing browser Tetris clones; any user, revenue or retention figures; roadmap and milestones; and the funding ask with use of proceeds. No such figures have been invented here.</p>
+</div>
+
+<div class="warn">
+  <h2>Risks visible in the current state</h2>
+  <p><strong>Third-party IP.</strong> Tetris is a registered trademark of The Tetris Company, which licenses the name, look and gameplay guidelines. This project is an unlicensed clone using the name <span class="cjk">俄罗斯方块</span>/Tetris; pitching it commercially without a licence is a legal exposure an investor&rsquo;s counsel will find immediately. <strong>No licence file</strong> on the repository means default all-rights-reserved &mdash; unclear rights for users and contributors. <strong>No description, homepage, topics, README badge or release</strong> on the repository: there is no packaging around the product. <strong>No distribution or metric instrumentation</strong>: nothing measures users, sessions or retention, so no growth claim can currently be substantiated.</p>
+</div>
+
+<footer>
+  <strong>Sources &amp; verification.</strong> All figures read 26 Oct 2026 from the GitHub REST API (repo metadata, root tree, languages, contributors, collaborators, commit history, Pages build, traffic endpoints) via the authenticated <span style="font-family:monospace">gh</span> CLI, and from direct headless-browser inspection of the live page (title, DOM, scripts, resource timings). Point-in-time data that will drift &mdash; re-check before reuse. Prepared by Hermes Agent; no figure here is estimated, projected or rounded up.
+</footer>
+
+</body>
+</html>
