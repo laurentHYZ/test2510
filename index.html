@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hans">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tetris</title>
+<title>俄罗斯方块</title>
 <style>
   :root{
     --bg:#0b1020;
@@ -80,6 +80,31 @@
   }
   .mute:hover{border-color:var(--accent)}
   .mute.off{color:var(--muted);text-decoration:line-through;opacity:.7}
+
+  .lang{
+    display:flex;
+    gap:4px;
+    width:100%;
+  }
+  .lang button{
+    flex:1 1 0;
+    background:var(--panel-2);
+    color:var(--muted);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:6px 2px;
+    font:inherit;
+    font-size:11px;
+    letter-spacing:.04em;
+    cursor:pointer;
+  }
+  .lang button:hover{border-color:var(--accent)}
+  .lang button[aria-pressed="true"]{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#06101f;
+    font-weight:600;
+  }
 
   .stage{
     position:relative;
@@ -161,49 +186,53 @@
 <div class="game">
   <aside class="panel left">
     <div class="box">
-      <h2>Hold</h2>
+      <h2 data-i18n="hold">暂存</h2>
       <canvas id="hold" class="preview"></canvas>
     </div>
     <div class="box">
-      <h2>Next</h2>
+      <h2 data-i18n="next">下一个</h2>
       <div id="nextWrap">
         <canvas id="next0" class="preview"></canvas>
         <canvas id="next1" class="preview"></canvas>
         <canvas id="next2" class="preview"></canvas>
       </div>
     </div>
-    <button class="mute" id="mute" type="button" aria-pressed="false">SOUND ON</button>
+    <button class="mute" id="mute" type="button" aria-pressed="false">音效 开</button>
+    <div class="lang" role="group" aria-label="Language / 语言">
+      <button type="button" data-lang="en" aria-pressed="false" lang="en">EN</button>
+      <button type="button" data-lang="zh" aria-pressed="true" lang="zh-Hans">中文</button>
+    </div>
   </aside>
 
   <div class="stage">
     <canvas id="board"></canvas>
     <div class="overlay" id="overlay">
-      <h1>TETRIS</h1>
+      <h1 id="overlayTitle">俄罗斯方块</h1>
       <p>
-        <kbd>←</kbd><kbd>→</kbd> move &nbsp; <kbd>↓</kbd> soft drop<br>
-        <kbd>↑</kbd>/<kbd>X</kbd> rotate &nbsp; <kbd>Z</kbd> rotate ccw<br>
-        <kbd>Space</kbd> hard drop &nbsp; <kbd>C</kbd> hold<br>
-        <kbd>P</kbd> pause &nbsp; <kbd>R</kbd> restart
+        <kbd>←</kbd><kbd>→</kbd> <span data-i18n="move">移动</span> &nbsp; <kbd>↓</kbd> <span data-i18n="softDrop">软降</span><br>
+        <kbd>↑</kbd>/<kbd>X</kbd> <span data-i18n="rotate">旋转</span> &nbsp; <kbd>Z</kbd> <span data-i18n="rotateCcw">逆时针</span><br>
+        <kbd>Space</kbd> <span data-i18n="hardDrop">硬降</span> &nbsp; <kbd>C</kbd> <span data-i18n="hold">暂存</span><br>
+        <kbd>P</kbd> <span data-i18n="pause">暂停</span> &nbsp; <kbd>R</kbd> <span data-i18n="restart">重开</span>
       </p>
-      <p class="hint" id="overlayHint">Press Enter or tap to start</p>
+      <p class="hint" id="overlayHint">按回车或点击开始</p>
     </div>
   </div>
 
   <aside class="panel stats">
     <div class="box">
-      <h2>Score</h2>
+      <h2 data-i18n="score">分数</h2>
       <div class="value" id="score">0</div>
     </div>
     <div class="box">
-      <h2>Level</h2>
+      <h2 data-i18n="level">等级</h2>
       <div class="value" id="level">1</div>
     </div>
     <div class="box">
-      <h2>Lines</h2>
+      <h2 data-i18n="lines">消行</h2>
       <div class="value small" id="lines">0</div>
     </div>
     <div class="box">
-      <h2>Best</h2>
+      <h2 data-i18n="best">最高分</h2>
       <div class="value small" id="best">0</div>
     </div>
   </aside>
@@ -214,7 +243,7 @@
     <button data-act="right">→</button>
     <button data-act="down">↓</button>
     <button data-act="drop">⤓</button>
-    <button data-act="hold">Hold</button>
+    <button data-act="hold" data-i18n="hold">暂存</button>
     <button data-act="pause">II</button>
   </div>
 </div>
@@ -296,7 +325,78 @@
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 
   const overlay = document.getElementById("overlay");
+  const overlayTitle = document.getElementById("overlayTitle");
   const overlayHint = document.getElementById("overlayHint");
+
+  // ---------------------------------------------------------------- i18n
+  // Two locales: English and Simplified Chinese. Chinese is the default.
+  const I18N = {
+    en: {
+      title: "TETRIS", hold: "Hold", next: "Next",
+      score: "Score", level: "Level", lines: "Lines", best: "Best",
+      soundOn: "SOUND ON", soundOff: "SOUND OFF",
+      move: "move", softDrop: "soft drop", rotate: "rotate",
+      rotateCcw: "rotate ccw", hardDrop: "hard drop", pause: "pause", restart: "restart",
+      startHint: "Press Enter or tap to start",
+      gameOver: "GAME OVER", paused: "PAUSED", finalScore: "Score",
+      newBest: "new best!", playAgain: "Press Enter or tap to play again",
+      resume: "Press P or tap to resume"
+    },
+    zh: {
+      title: "俄罗斯方块", hold: "暂存", next: "下一个",
+      score: "分数", level: "等级", lines: "消行", best: "最高分",
+      soundOn: "音效 开", soundOff: "音效 关",
+      move: "移动", softDrop: "软降", rotate: "旋转",
+      rotateCcw: "逆时针", hardDrop: "硬降", pause: "暂停", restart: "重开",
+      startHint: "按回车或点击开始",
+      gameOver: "游戏结束", paused: "已暂停", finalScore: "得分",
+      newBest: "新纪录！", playAgain: "按回车或点击再玩一次",
+      resume: "按 P 或点击继续"
+    }
+  };
+
+  let lang = "zh";
+  try {
+    const savedLang = localStorage.getItem("tetris-lang");
+    if (savedLang === "en" || savedLang === "zh") lang = savedLang;
+  } catch (e) {}
+
+  function t(key) {
+    return (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key;
+  }
+
+  // What the overlay is currently showing; refreshed on every language change.
+  const overlayState = { kind: "ready", score: 0, isBest: false };
+
+  function refreshOverlay() {
+    if (overlayState.kind === "over") {
+      overlayTitle.textContent = t("gameOver");
+      overlayHint.innerHTML = t("finalScore") + " " + overlayState.score +
+        (overlayState.isBest ? " · " + t("newBest") : "") +
+        "<br>" + t("playAgain");
+    } else if (overlayState.kind === "paused") {
+      overlayTitle.textContent = t("paused");
+      overlayHint.innerHTML = t("resume");
+    } else {
+      overlayTitle.textContent = t("title");
+      overlayHint.textContent = t("startHint");
+    }
+  }
+
+  function applyLang(next) {
+    lang = next === "en" ? "en" : "zh";
+    document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
+    document.title = t("title");
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      el.textContent = t(el.getAttribute("data-i18n"));
+    });
+    document.querySelectorAll(".lang button").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-lang") === lang ? "true" : "false");
+    });
+    syncMuteButton();
+    refreshOverlay();
+    try { localStorage.setItem("tetris-lang", lang); } catch (e) {}
+  }
   const scoreEl = document.getElementById("score");
   const levelEl = document.getElementById("level");
   const linesEl = document.getElementById("lines");
@@ -449,7 +549,7 @@
 
   function syncMuteButton() {
     const off = Sound.muted();
-    muteBtn.textContent = off ? "SOUND OFF" : "SOUND ON";
+    muteBtn.textContent = off ? t("soundOff") : t("soundOn");
     muteBtn.setAttribute("aria-pressed", off ? "true" : "false");
     muteBtn.classList.toggle("off", off);
   }
@@ -458,7 +558,17 @@
     e.stopPropagation();
     Sound.toggle();
     syncMuteButton();
+    muteBtn.blur();
   });
+
+  document.querySelectorAll(".lang button").forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      applyLang(btn.getAttribute("data-lang"));
+      btn.blur();
+    });
+  });
+
   syncMuteButton();
 
   // ---------------------------------------------------------------- drawing
@@ -743,6 +853,7 @@
     lockTimer = 0; lockResets = 0; grounded = false;
     softTimer = 0; dasTimer = 0; arrTimer = 0; dasDir = 0;
     state = "playing";
+    overlayState.kind = "playing";
     spawn();
     overlay.classList.add("hidden");
     drawHoldAndNext();
@@ -753,10 +864,10 @@
 
   function gameOver() {
     state = "over";
-    const isBest = score >= best && score > 0;
-    overlay.querySelector("h1").textContent = "GAME OVER";
-    overlayHint.innerHTML = "Score " + score + (isBest ? " · new best!" : "") +
-      "<br>Press Enter or tap to play again";
+    overlayState.kind = "over";
+    overlayState.score = score;
+    overlayState.isBest = score >= best && score > 0;
+    refreshOverlay();
     overlay.classList.remove("hidden");
     updateStats();
     Sound.gameOver();
@@ -765,11 +876,12 @@
   function togglePause() {
     if (state === "playing") {
       state = "paused";
-      overlay.querySelector("h1").textContent = "PAUSED";
-      overlayHint.innerHTML = "Press P or tap to resume";
+      overlayState.kind = "paused";
+      refreshOverlay();
       overlay.classList.remove("hidden");
     } else if (state === "paused") {
       state = "playing";
+      overlayState.kind = "playing";
       overlay.classList.add("hidden");
       lastTime = performance.now();
     }
@@ -980,8 +1092,10 @@
   dropInterval = SPEEDS[0]; dropCounter = 0; lockTimer = 0; lockResets = 0;
   grounded = false; softTimer = 0; dasTimer = 0; arrTimer = 0; dasDir = 0;
   state = "ready";
+  overlayState.kind = "ready";
   drawHoldAndNext();
   updateStats();
+  applyLang(lang);
   requestAnimationFrame(loop);
 })();
 </script>

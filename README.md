@@ -44,4 +44,5 @@ On touch devices, on-screen buttons appear below the board.
 - Level up every 10 lines, 15-step gravity curve
 - Chiptune sound effects synthesized in-browser with the Web Audio API (move, rotate, hold, lock, hard drop, line clear, level up, game over) — no audio files, toggle with the **SOUND** button or <kbd>M</kbd>
 - Best score saved in `localStorage`
+- Bilingual UI (Simplified Chinese / English) with an **EN / 中文** toggle in the side panel; Chinese is the default, and the choice is remembered in `localStorage`
 - Responsive dark UI, no external assets
