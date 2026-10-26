@@ -8,6 +8,17 @@ A single-file Tetris game — no dependencies, no build step, works offline.
 
 [![Play Tetris](screenshot.png)](https://laurenthyz.github.io/test2510/)
 
+## 📄 One-pager
+
+A one-page fact sheet about this project — what it is, the repository and hosting facts, measured traffic, and the open questions. Every figure in it is taken from the GitHub API and from direct inspection of the live page; nothing is estimated.
+
+| Document | Language | Format |
+| --- | --- | --- |
+| [one-pager.pdf](one-pager.pdf) | English | A4, 1 page |
+| [one-pager.fr.pdf](one-pager.fr.pdf) | Français | A4, 1 page |
+
+Editable sources: [one-pager.html](one-pager.html) and [one-pager.fr.html](one-pager.fr.html) — edit and re-print with any headless browser (`--print-to-pdf`, A4) to regenerate a PDF.
+
 ## Run locally
 
 Just open `index.html` in any modern browser:
